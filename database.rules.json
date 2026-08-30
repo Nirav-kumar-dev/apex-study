@@ -1,0 +1,27 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        "study_os_data": {
+          ".validate": "newData.hasChildren(['user'])",
+          "user": {
+            ".validate": "newData.hasChildren(['name', 'classGrade'])",
+            "name": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100"
+            },
+            "classGrade": {
+              ".validate": "newData.isString() && newData.val().length <= 50"
+            },
+            "email": {
+              ".validate": "!newData.exists() || (newData.isString() && newData.val().length <= 150)"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -17,6 +17,8 @@ import {
   set,
   get,
   child,
+  onValue,
+  off,
   serverTimestamp,
 } from 'firebase/database';
 import { AppState } from '../types';
@@ -132,5 +134,36 @@ export async function loadUserDataFromCloud(uid: string): Promise<AppState | nul
   } catch (err) {
     console.warn('Realtime database cloud load error:', err);
     return null;
+  }
+}
+
+/**
+ * Subscribe to Realtime Database changes for live multi-device synchronization
+ */
+export function subscribeToUserDataInCloud(
+  uid: string,
+  onData: (data: AppState) => void,
+  onError?: (err: Error) => void
+): () => void {
+  if (!uid) return () => {};
+  try {
+    const userRef = ref(database, `users/${uid}/study_os_data`);
+    const unsubscribe = onValue(
+      userRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          onData(data as AppState);
+        }
+      },
+      (error) => {
+        console.warn('Realtime database subscription error:', error);
+        if (onError) onError(error);
+      }
+    );
+    return () => unsubscribe();
+  } catch (err: any) {
+    console.warn('Failed to attach Realtime database listener:', err);
+    return () => {};
   }
 }

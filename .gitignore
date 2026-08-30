@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Desktop binaries and PyInstaller build artifacts
+*.exe
+*.spec
+build/

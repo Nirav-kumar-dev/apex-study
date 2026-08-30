@@ -138,6 +138,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   const getFriendlyErrorMessage = (msg: string) => {
+    if (msg.includes('unauthorized-domain')) {
+      const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'your-domain';
+      return `Unauthorized Domain: Your domain "${currentHost}" must be added to Firebase Console (exams-mc) > Authentication > Settings > Authorized domains.`;
+    }
     if (msg.includes('user-not-found') || msg.includes('invalid-credential')) {
       return 'Incorrect email or password. Please check and try again.';
     }
