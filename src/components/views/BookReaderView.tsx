@@ -442,6 +442,18 @@ Provide clear, step-by-step mathematical derivations, scientific explanations, o
                   <span className="hidden sm:inline">AI Tutor</span>
                 </button>
 
+                {/* Download PDF Button */}
+                {activePdfUrl && (
+                  <a
+                    href={activePdfUrl}
+                    download
+                    className="p-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors flex items-center gap-1 text-xs"
+                    title="Download PDF textbook chapter"
+                  >
+                    <Download className="w-4 h-4" />
+                  </a>
+                )}
+
                 {/* External Tab Link */}
                 {activePdfUrl && (
                   <a
@@ -461,7 +473,7 @@ Provide clear, step-by-step mathematical derivations, scientific explanations, o
             {activePdfUrl ? (
               <div
                 className={`w-full bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden flex flex-col items-center justify-center relative shadow-inner ${
-                  isMaximizedReader ? 'h-[750px]' : 'h-[520px]'
+                  isMaximizedReader ? 'h-[750px]' : 'h-[540px]'
                 }`}
               >
                 <div
@@ -474,31 +486,11 @@ Provide clear, step-by-step mathematical derivations, scientific explanations, o
                   }}
                   className="w-full h-full"
                 >
-                  <object
-                    data={`${activePdfUrl}#toolbar=1&navpanes=0&scrollbar=1`}
-                    type="application/pdf"
-                    className="w-full h-full rounded-2xl"
-                  >
-                    <iframe
-                      src={`${activePdfUrl}#toolbar=1&navpanes=0&scrollbar=1`}
-                      className="w-full h-full rounded-2xl"
-                      title={selectedChapterFile?.name || 'Textbook PDF'}
-                    >
-                      <div className="p-6 text-center text-slate-400 space-y-3">
-                        <BookOpen className="w-10 h-10 mx-auto text-indigo-400" />
-                        <p className="text-xs">Your browser is displaying this PDF chapter:</p>
-                        <a
-                          href={activePdfUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-xs shadow-md"
-                        >
-                          <ExternalLink className="w-3.5 h-3.5" />
-                          <span>Open Chapter PDF</span>
-                        </a>
-                      </div>
-                    </iframe>
-                  </object>
+                  <iframe
+                    src={`${activePdfUrl}#toolbar=1&navpanes=0&scrollbar=1`}
+                    className="w-full h-full rounded-2xl border-0 bg-slate-950"
+                    title={selectedChapterFile?.name || 'Textbook PDF'}
+                  />
                 </div>
               </div>
             ) : (

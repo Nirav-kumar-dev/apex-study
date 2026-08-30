@@ -55,6 +55,9 @@ export default defineConfig({
   plugins: [react(), serveBookFolderPlugin()],
   server: {
     port: 5173,
+    watch: {
+      ignored: ['**/build/**', '**/dist/**', '**/*.exe', '**/desktop/**', '**/.git/**'],
+    },
     proxy: {
       '/api/nvidia': {
         target: 'https://integrate.api.nvidia.com/v1',

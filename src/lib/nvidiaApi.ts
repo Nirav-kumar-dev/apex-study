@@ -91,7 +91,28 @@ export function extractJson<T = any>(text: string): T {
 }
 
 /**
- * Returns effective base URL, routing through local Vite proxy in browser to prevent CORS 'Failed to fetch' errors
+ * Sanitizes and extracts human-readable message from error text (handles JSON and HTML error responses)
+ */
+function cleanErrorMessage(rawText: string, status: number): string {
+  try {
+    const json = JSON.parse(rawText);
+    return json.error?.message || json.detail || json.message || rawText;
+  } catch {}
+  if (rawText.includes('<!DOCTYPE') || rawText.includes('<html')) {
+    const msgMatch = rawText.match(/<p>Message:\s*([^<]+)<\/p>/i) ||
+                     rawText.match(/<p>Error code explanation:\s*([^<]+)<\/p>/i) ||
+                     rawText.match(/<h1>([^<]+)<\/h1>/i) ||
+                     rawText.match(/<title>([^<]+)<\/title>/i);
+    if (msgMatch) {
+      return msgMatch[1].trim();
+    }
+    return `Server returned error (${status}). Please check local desktop service or API key.`;
+  }
+  return rawText.slice(0, 300);
+}
+
+/**
+ * Returns effective base URL, routing through local proxy in browser to prevent CORS errors
  */
 export function getEffectiveBaseUrl(baseUrl?: string): string {
   const url = (baseUrl || DEFAULT_NVIDIA_BASE_URL).trim().replace(/\/+$/, '');
@@ -116,32 +137,55 @@ export async function testNvidiaConnection(
   const cleanBaseUrl = getEffectiveBaseUrl(baseUrl);
   const startTime = performance.now();
 
+  const reqBody = JSON.stringify({
+    model: model.trim(),
+    messages: [
+      { role: 'user', content: 'Respond with exactly one word: "Connected".' },
+    ],
+    temperature: 0.1,
+    max_tokens: 32,
+  });
+
   try {
-    const response = await fetch(`${cleanBaseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${activeKey}`,
-      },
-      body: JSON.stringify({
-        model: model.trim(),
-        messages: [
-          { role: 'user', content: 'Respond with exactly one word: "Connected".' },
-        ],
-        temperature: 0.1,
-        max_tokens: 32,
-      }),
-    });
+    let response: Response;
+    try {
+      response = await fetch(`${cleanBaseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${activeKey}`,
+        },
+        body: reqBody,
+      });
+
+      // If local proxy returned 501 or 404, attempt direct fetch
+      if (!response.ok && (response.status === 501 || response.status === 404) && cleanBaseUrl !== DEFAULT_NVIDIA_BASE_URL) {
+        response = await fetch(`${DEFAULT_NVIDIA_BASE_URL}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${activeKey}`,
+          },
+          body: reqBody,
+        });
+      }
+    } catch {
+      // Fallback directly to NVIDIA API if local endpoint is unreachable
+      response = await fetch(`${DEFAULT_NVIDIA_BASE_URL}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${activeKey}`,
+        },
+        body: reqBody,
+      });
+    }
 
     const latencyMs = Math.round(performance.now() - startTime);
 
     if (!response.ok) {
       const errText = await response.text();
-      let parsedErr = errText;
-      try {
-        const json = JSON.parse(errText);
-        parsedErr = json.error?.message || json.detail || errText;
-      } catch {}
+      const parsedErr = cleanErrorMessage(errText, response.status);
       return {
         success: false,
         latencyMs,
@@ -162,7 +206,7 @@ export async function testNvidiaConnection(
     return {
       success: false,
       latencyMs,
-      message: `Network/CORS Error: ${err instanceof Error ? err.message : 'Failed to reach NVIDIA API endpoint'}. Ensure your key is active and endpoint is reachable.`,
+      message: `Network/CORS Error: ${err instanceof Error ? err.message : 'Failed to reach NVIDIA API endpoint'}. Ensure your key is active.`,
     };
   }
 }
@@ -207,35 +251,42 @@ export async function callNvidiaChat(
     };
   }
 
-  let response = await fetch(`${cleanBaseUrl}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey.trim()}`,
-    },
-    body: JSON.stringify(payload),
-  });
-
-  // If 400 Bad Request occurs (possibly due to extra_body), retry without extra_body
-  if (!response.ok && payload.extra_body && response.status === 400) {
-    delete payload.extra_body;
-    response = await fetch(`${cleanBaseUrl}/chat/completions`, {
+  const executePost = async (targetBase: string, bodyObj: any) => {
+    return fetch(`${targetBase}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey.trim()}`,
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(bodyObj),
     });
+  };
+
+  let response: Response;
+  try {
+    response = await executePost(cleanBaseUrl, payload);
+    // If local proxy returned 501 or 404, fallback to direct NVIDIA API
+    if (!response.ok && (response.status === 501 || response.status === 404) && cleanBaseUrl !== DEFAULT_NVIDIA_BASE_URL) {
+      response = await executePost(DEFAULT_NVIDIA_BASE_URL, payload);
+    }
+  } catch {
+    // If network error occurred on local URL, try direct API
+    response = await executePost(DEFAULT_NVIDIA_BASE_URL, payload);
+  }
+
+  // If 400 Bad Request occurs (possibly due to extra_body), retry without extra_body
+  if (!response.ok && payload.extra_body && response.status === 400) {
+    delete payload.extra_body;
+    try {
+      response = await executePost(cleanBaseUrl, payload);
+    } catch {
+      response = await executePost(DEFAULT_NVIDIA_BASE_URL, payload);
+    }
   }
 
   if (!response.ok) {
     const errText = await response.text();
-    let msg = errText;
-    try {
-      const parsed = JSON.parse(errText);
-      msg = parsed.error?.message || parsed.detail || errText;
-    } catch {}
+    const msg = cleanErrorMessage(errText, response.status);
     throw new Error(`NVIDIA API ${response.status}: ${msg}`);
   }
 

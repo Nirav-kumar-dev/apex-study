@@ -37,21 +37,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller pillow requests
 
-      - name: Build Desktop Executable (apex.exe)
+      - name: Build Desktop Binaries (Apex Study.exe & Uninstall.exe)
         run: |
-          python -m PyInstaller --onefile --noconsole --name="apex" --icon="desktop_icon.ico" --add-data="dist;dist" --add-data="desktop_icon.ico;." desktop/apex_app.py
+          python -m PyInstaller --onefile --noconsole --name="Apex Study" --icon="desktop_icon.ico" desktop/apex_app.py
+          python -m PyInstaller --onefile --noconsole --name="Uninstall" --icon="desktop_icon.ico" desktop/uninstall_app.py
 
-      - name: Build Installer (apex-study-installer.exe)
+      - name: Build Installer (installer.exe)
         run: |
-          python -m PyInstaller --onefile --noconsole --name="apex-study-installer" --icon="desktop_icon.ico" --add-data="dist/apex.exe;." --add-data="desktop_icon.ico;." desktop/installer_app.py
+          python -m PyInstaller --onefile --noconsole --name="installer" --icon="desktop_icon.ico" --add-data="dist/Apex Study.exe;." --add-data="dist/Uninstall.exe;." --add-data="desktop_icon.ico;." desktop/installer_app.py
 
-      - name: Create GitHub Release and Upload Installer
+      - name: Create GitHub Release and Upload Artifacts
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            dist/apex-study-installer.exe
-            dist/apex.exe
+            dist/installer.exe
+            dist/Apex Study.exe
+            dist/Uninstall.exe
           name: "Apex Study OS Release ${{ github.ref_name }}"
           draft: false
           prerelease: false
