@@ -1,97 +1,83 @@
-# 🚀 Apex Study OS — AI-Powered Exam Preparation & Planning System
+# ⚡ Apex Study OS — CBSE AI Study Suite & Examination Engine
 
-Apex Study OS is an intelligent, full-featured web operating system designed for CBSE and school examination prep (Classes 7th, 8th, 9th, and 10th). It integrates **Official 2026–2027 Half-Yearly Exam Timetables**, **NVIDIA NIM AI Study Tutoring**, **Offline NCERT PDF Textbook Reader**, **Ebbinghaus Spaced Repetition**, and **Active Recall Drills**.
+> [!IMPORTANT]
+> **🌐 Web Preview Notice**: The hosted website is only an **online preview/demo**. To use the **full application** with offline NCERT PDF textbooks, local progress persistence, and unrestricted high-speed NVIDIA NIM AI tutoring, you must **download and run the desktop application on your computer**.
+
+---
+
+## 📥 Download & Desktop Installation
+
+### 🚀 Quick Start (Recommended)
+1. Download **[`installer.exe`](https://github.com/Nirav-kumar-dev/apex-study/raw/main/desktop/installer.exe)** on your Windows computer.
+2. Run `installer.exe` and click **Install Now**.
+   - The installer automatically downloads the full repository and all NCERT textbook PDFs.
+   - Installs both **`Apex Study.exe` (Launcher)** and **`Uninstall.exe` (Uninstaller)** into `%LOCALAPPDATA%\Programs\ApexStudy`.
+   - Creates dual Desktop shortcuts: **`Apex Study OS`** and **`Uninstall Apex Study OS`**.
+3. Click **Launch Apex Study OS** (or open the Desktop shortcut).
+   - The launcher starts all background services (Python API, Vite local host server, PDF streaming proxy) and automatically opens your web browser to **`http://localhost:5173/`**.
+
+---
+
+## 🗑️ How to Uninstall
+If you ever want to remove the application completely from your computer:
+1. Double-click the **`Uninstall Apex Study OS`** shortcut on your Desktop (or run `Uninstall.exe`).
+2. Click **Yes** to confirm.
+3. The uninstaller will safely close all running background processes and completely delete:
+   - All downloaded repository files, source code, and `node_modules`
+   - All offline NCERT textbook PDFs
+   - All AppData profiles, cached data, and scheduled watchdog tasks
+   - All Desktop and Start Menu shortcuts
 
 ---
 
 ## ✨ Features
 
-- 📅 **Official Gyan Niketan Examination Schedules**: Exact schedules, timings, and marks for Class 7, 8, 9, and 10.
-- 🤖 **NVIDIA NIM AI Study Configuration**: AI-powered cognitive weight balancing, high-yield topic analysis, and neural configuration loading screen.
-- 📚 **Embedded NCERT PDF Textbook Reader**: Big zoomable reader with full offline PDF chapters for Mathematics, Science, English (Beehive), Hindi (Kshitij), and Social Science.
-- 🔁 **Spaced Repetition & Error Notebook**: Intelligent Leitner/Ebbinghaus review schedules with error log analytics.
-- ⚡ **Interactive AI Mock Tests**: Full timed practice exams with instant CBSE marking breakdown.
-- 🌓 **Dark Futuristic Design**: Smooth gradients, responsive layout for mobile and desktop, sound cues, and confetti celebrations.
+- 🤖 **NVIDIA NIM AI Study Tutor**: Step-by-step mathematical derivations, physics numerical problem solver with reasoning tokens, and instant CBSE rubric evaluation.
+- 📚 **Full Offline NCERT PDF Textbook Reader**: Embedded reader with smooth page zooming, range byte streaming, and instant chapter search for Mathematics, Science, English, Hindi, and Social Science.
+- 📅 **Official 2026–2027 Examination Timetables**: Preloaded exam schedules and syllabus breakdowns for Classes 7th, 8th, 9th, and 10th.
+- 🔁 **Ebbinghaus Spaced Repetition**: Leitner box scheduling and active recall drills to maximize long-term retention.
+- 📓 **Smart Error Notebook**: Categorize errors into Conceptual, Calculation, or Recall slips with diagnostic remediation tips.
+- ⚡ **Interactive AI Mock Tests**: Auto-synthesize CBSE mock exam papers tailored by topic and difficulty level.
 
 ---
 
-## 🌐 Quick Deployment Guide (GitHub Pages)
+## 💻 Manual Developer Setup (Localhost)
 
-### Step 1: Initialize Git and Commit
-Open PowerShell or Terminal in the project folder and run:
-
-```bash
-git init
-git add .
-git commit -m "Initial commit: Apex Study OS"
-```
-
-### Step 2: Create a New Repository on GitHub
-1. Go to [https://github.com/new](https://github.com/new).
-2. Name your repository (e.g., `apex-study-os` or `jarvis`).
-3. Set the visibility to **Public**.
-4. Click **Create repository** (do not check "Initialize with README").
-
-### Step 3: Link and Push to GitHub
-Copy the commands shown on GitHub or run:
-
-```bash
-git branch -M main
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME.git
-git push -u origin main
-```
-
-*(Replace `YOUR_GITHUB_USERNAME` and `YOUR_REPO_NAME` with your actual GitHub username and repository name).*
-
-### Step 4: Enable GitHub Pages
-1. On GitHub, go to your repository **Settings** → **Pages** (in the left sidebar).
-2. Under **Build and deployment** → **Source**, select **GitHub Actions**.
-3. That's it! The automated workflow in `.github/workflows/deploy.yml` will automatically build and publish the live web link (e.g., `https://your-username.github.io/apex-study-os/`).
-
----
-
-## ⚡ Alternative 1-Click Deployment (Vercel / Netlify)
-
-### Deploying to Vercel:
-1. Go to [https://vercel.com/new](https://vercel.com/new).
-2. Import your GitHub repository.
-3. Framework Preset will automatically detect **Vite**.
-4. Click **Deploy**! Your site is live in ~30 seconds.
-
-### Deploying to Netlify:
-1. Go to [https://app.netlify.com/start](https://app.netlify.com/start).
-2. Connect your GitHub repository.
-3. Build command: `npm run build`, Publish directory: `dist`.
-4. Click **Deploy Site**!
-
----
-
-## 💻 Local Development
+If you prefer to run the project from source code using terminal commands:
 
 ### Prerequisites:
-- **Node.js**: v18 or higher
-- **Python**: 3.10+ (for optional local reasoning backend)
+- **Node.js**: v18 or higher (with `npm`)
+- **Python**: 3.10+ (for backend API proxy)
 
-### Steps:
+### Commands:
 ```bash
-# 1. Install dependencies
+# 1. Clone the repository
+git clone https://github.com/Nirav-kumar-dev/apex-study.git
+cd apex-study
+
+# 2. Install frontend dependencies
 npm install
 
-# 2. Run the Vite dev server
+# 3. Start the Vite development server
 npm run dev
 
-# 3. (Optional) Run the Python AI reasoning backend
-python api_server.py
+# 4. (Optional) Run the standalone desktop launcher
+python desktop/apex_app.py
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Open **[http://localhost:5173](http://localhost:5173)** in your browser.
 
 ---
 
-## 🔑 Environment Variables & AI Configuration
+## 🔑 NVIDIA NIM API Configuration
 
-You can provide your free NVIDIA API Key directly in the app UI via **Settings** → **NVIDIA AI API Key**, or via `.env`:
+You can configure your free NVIDIA API Key directly in the app UI via **Settings** → **NVIDIA AI API Key**, or by creating a `.env` file in the root directory:
 
 ```env
 VITE_NVIDIA_API_KEY=nvapi-your-key-here
 ```
+
+---
+
+## 📄 License
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
