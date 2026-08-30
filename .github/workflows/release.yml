@@ -1,0 +1,58 @@
+name: Build & Publish Desktop Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Node Dependencies & Build Web App
+        run: |
+          npm ci || npm install
+          npm run build
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller pillow requests
+
+      - name: Build Desktop Executable (apex.exe)
+        run: |
+          python -m PyInstaller --onefile --noconsole --name="apex" --icon="desktop_icon.ico" --add-data="dist;dist" --add-data="desktop_icon.ico;." desktop/apex_app.py
+
+      - name: Build Installer (apex-study-installer.exe)
+        run: |
+          python -m PyInstaller --onefile --noconsole --name="apex-study-installer" --icon="desktop_icon.ico" --add-data="dist/apex.exe;." --add-data="desktop_icon.ico;." desktop/installer_app.py
+
+      - name: Create GitHub Release and Upload Installer
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            dist/apex-study-installer.exe
+            dist/apex.exe
+          name: "Apex Study OS Release ${{ github.ref_name }}"
+          draft: false
+          prerelease: false
+          generate_release_notes: true
