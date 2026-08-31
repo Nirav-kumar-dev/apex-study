@@ -1,0 +1,189 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #060913;
+    --foreground: #f8fafc;
+    --card: #0c1222;
+    --card-foreground: #f1f5f9;
+    --popover: #0f172a;
+    --popover-foreground: #f8fafc;
+    --primary: #6366f1;
+    --primary-foreground: #ffffff;
+    --accent: #1e293b;
+    --accent-foreground: #f8fafc;
+    --muted: #1e293b;
+    --muted-foreground: #94a3b8;
+    --border: #1e293b;
+  }
+
+  .light {
+    --background: #f8fafc;
+    --foreground: #0f172a;
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+    --popover: #ffffff;
+    --popover-foreground: #0f172a;
+    --primary: #4f46e5;
+    --primary-foreground: #ffffff;
+    --accent: #f1f5f9;
+    --accent-foreground: #0f172a;
+    --muted: #e2e8f0;
+    --muted-foreground: #64748b;
+    --border: #e2e8f0;
+  }
+}
+
+/* High-contrast and clean input / select / textarea styling across all browsers */
+input, select, textarea {
+  color-scheme: dark;
+}
+
+.dark input, .dark select, .dark textarea {
+  background-color: #0f172a;
+  color: #ffffff;
+  border-color: #334155;
+  color-scheme: dark;
+}
+
+.dark input::placeholder, .dark textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+.dark select option {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+.light input, .light select, .light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+  color-scheme: light;
+}
+
+.light select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+input[type="date"] {
+  color-scheme: dark;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  cursor: pointer;
+}
+
+.light input[type="date"] {
+  color-scheme: light;
+}
+
+.light input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.2);
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.4);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.6);
+}
+
+/* Accessibility: respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Custom glass & subtle elevation tokens */
+.glass-panel {
+  background: rgba(12, 18, 34, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-panel-hover {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  background: rgba(18, 26, 48, 0.85);
+  border-color: rgba(99, 102, 241, 0.25);
+  transform: translateY(-1px);
+}
+
+.subtle-border {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.light .glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.light .subtle-border {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Hide scrollbar for clean horizontal tab strips */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Mobile Safe Area & Touch Optimizations */
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pl-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.pr-safe {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Suppress default mobile webview tap highlight */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fast tap response */
+button, a, input, select, textarea {
+  touch-action: manipulation;
+}

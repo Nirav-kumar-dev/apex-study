@@ -1,0 +1,49 @@
+{
+  "name": "jarvis",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "cap:sync": "npm run build && cap sync android",
+    "cap:open": "cap open android",
+    "cap:run": "cap run android",
+    "build:android": "npm run build && cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/browser": "^8.0.4",
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/keyboard": "^8.0.5",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.3",
+    "canvas-confetti": "^1.9.4",
+    "clsx": "^2.1.1",
+    "firebase": "^12.18.0",
+    "lucide-react": "^1.37.0",
+    "pdfjs-dist": "^3.11.174",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "recharts": "^3.10.1",
+    "tailwind-merge": "^3.6.0"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.1.0",
+    "autoprefixer": "^10.5.4",
+    "oxlint": "^1.79.0",
+    "postcss": "^8.5.26",
+    "tailwindcss": "^3.4.17",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.2"
+  }
+}
